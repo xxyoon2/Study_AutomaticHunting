@@ -45,6 +45,9 @@ public class Player : MonoBehaviour
         GameManager.Instance.Hitting.RemoveListener(Hit);
     }
 
+    /// <summary>
+    /// 공격
+    /// </summary>
     IEnumerator Attack()
     {
         _cooltimeBar.maxValue = 1f + _speed;
@@ -74,6 +77,10 @@ public class Player : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 맞음
+    /// </summary>
+    /// <param name="damage"></param>
     private void Hit(int damage)
     {
         if (state == PState.Attack)
@@ -94,6 +101,9 @@ public class Player : MonoBehaviour
         _hpBar.value = _hp;
     }
 
+    /// <summary>
+    /// 코루틴 중단
+    /// </summary>
     private void StopAction()
     {
         StopCoroutine(_attack);
