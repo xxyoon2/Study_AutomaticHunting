@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 enum PState
 {
@@ -12,6 +13,9 @@ enum PState
 
 public class Player : MonoBehaviour
 {
+    [Header("UI")]
+    [SerializeField] private Slider _hpBar;
+
     [SerializeField] private int _hp = 10;
     [SerializeField] private int _strength = 2;
     [SerializeField] private float _speed;
@@ -46,7 +50,7 @@ public class Player : MonoBehaviour
         {
             yield return actionTime;
             state = PState.Attack;
-            Debug.Log("죽어랏!!!!~!~!");
+            Debug.Log($"{gameObject} : 죽어랏!!!!~!~!");
             GameManager.Instance.HitOtherPlayer(_strength);
             yield return attackActionTime;
             state = PState.Nomal;
@@ -64,9 +68,12 @@ public class Player : MonoBehaviour
 
         if (_hp <= 0)
         {
+            _hp = 0;
             GameManager.Instance.BattleEnd();
-            Debug.Log("컥컥...");
+            Debug.Log($"{gameObject} : 컥컥...");
         }
+
+        _hpBar.value = _hp;
     }
 
     private void StopAction()
