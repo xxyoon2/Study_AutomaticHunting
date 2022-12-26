@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 enum PState
 {
@@ -12,6 +14,12 @@ enum PState
 
 public class Player : MonoBehaviour
 {
+    [Header("UI")]
+    [SerializeField] private Slider _hpBar;
+    [SerializeField] private Slider _cooltimeBar;
+    [SerializeField] private TextMeshProUGUI _damageText;
+
+    [Header("Data")]
     [SerializeField] private int _hp = 10;
     [SerializeField] private int _strength = 2;
     [SerializeField] private float _speed;
@@ -39,17 +47,30 @@ public class Player : MonoBehaviour
 
     IEnumerator Attack()
     {
-        WaitForSeconds actionTime = new WaitForSeconds(1f + _speed);
+        _cooltimeBar.maxValue = 1f + _speed;
+        float actionTime = 0f;
         WaitForSeconds attackActionTime = new WaitForSeconds(1f);
 
         while (true)
         {
-            yield return actionTime;
-            state = PState.Attack;
-            Debug.Log("죽어랏!!!!~!~!");
-            GameManager.Instance.HitOtherPlayer(_strength);
-            yield return attackActionTime;
-            state = PState.Nomal;
+            yield return new WaitForSeconds(1f);
+            actionTime += 1f;
+            _cooltimeBar.value = actionTime;
+
+            if (actionTime >= _cooltimeBar.maxValue)
+            {
+                state = PState.Attack;
+                Debug.Log($"{gameObject} : 죽어랏!!!!~!~!");
+                GameManager.Instance.HitOtherPlayer(_strength);
+
+
+                yield return attackActionTime;
+
+                state = PState.Nomal;
+                actionTime = 0f;
+                _cooltimeBar.value = 0f;
+
+            }
         }
     }
 
@@ -64,9 +85,13 @@ public class Player : MonoBehaviour
 
         if (_hp <= 0)
         {
+            _hp = 0;
             GameManager.Instance.BattleEnd();
-            Debug.Log("컥컥...");
+            Debug.Log($"{gameObject} : 컥컥...");
         }
+
+        _damageText.text = "-" + damage;
+        _hpBar.value = _hp;
     }
 
     private void StopAction()
