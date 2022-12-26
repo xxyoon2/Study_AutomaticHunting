@@ -2,31 +2,75 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+enum PState
+{
+    None,
+    Nomal,
+    Attack,
+    Max,
+}
+
 public class Player : MonoBehaviour
 {
     [SerializeField] private int _hp = 10;
-    [SerializeField] private int _speed;
+    [SerializeField] private int _strength = 2;
+    [SerializeField] private float _speed;
 
     private IEnumerator _attack = null;
-    private WaitForSeconds _actionTime = new WaitForSeconds(3.0f);
+
+    private PState state = PState.Nomal;
 
     private void Start()
     {
+        _speed = GameManager.Instance.SpeedDistribution();
+
         _attack = Attack();
         StartCoroutine(_attack);
+
+        GameManager.Instance.EndGameEvent.AddListener(StopAction);
+        GameManager.Instance.Hitting.AddListener(Hit);
+    }
+
+    private void OnDisable()
+    {
+        GameManager.Instance.EndGameEvent.RemoveListener(StopAction);
+        GameManager.Instance.Hitting.RemoveListener(Hit);
     }
 
     IEnumerator Attack()
     {
-        while(true)
+        WaitForSeconds actionTime = new WaitForSeconds(1f + _speed);
+        WaitForSeconds attackActionTime = new WaitForSeconds(1f);
+
+        while (true)
         {
-            yield return _actionTime;
+            yield return actionTime;
+            state = PState.Attack;
             Debug.Log("죽어랏!!!!~!~!");
+            GameManager.Instance.HitOtherPlayer(_strength);
+            yield return attackActionTime;
+            state = PState.Nomal;
         }
     }
 
-    private void Hit()
+    private void Hit(int damage)
     {
-        _hp -= 1;
+        if (state == PState.Attack)
+        {
+            return;
+        }
+
+        _hp -= damage;
+
+        if (_hp <= 0)
+        {
+            GameManager.Instance.BattleEnd();
+            Debug.Log("컥컥...");
+        }
+    }
+
+    private void StopAction()
+    {
+        StopCoroutine(_attack);
     }
 }
