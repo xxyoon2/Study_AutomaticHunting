@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 enum PState
 {
@@ -15,6 +16,7 @@ public class Player : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private Slider _hpBar;
+    [SerializeField] private TextMeshProUGUI _damageText;
 
     [SerializeField] private int _hp = 10;
     [SerializeField] private int _strength = 2;
@@ -73,6 +75,7 @@ public class Player : MonoBehaviour
             Debug.Log($"{gameObject} : 컥컥...");
         }
 
+        _damageText.text = "-" + damage;
         _hpBar.value = _hp;
     }
 
