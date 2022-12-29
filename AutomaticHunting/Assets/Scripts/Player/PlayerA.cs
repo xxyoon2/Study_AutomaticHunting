@@ -19,14 +19,21 @@ public class PlayerA : MonoBehaviour
     [SerializeField] private Slider _cooltimeBar;
     [SerializeField] private TextMeshProUGUI _damageText;
 
+    [Header("시작할 때 적용되는 플레이어 데이터")]
+    [SerializeField] private int maxHP = 100;
+    [SerializeField] private int atk = 10;
+    [SerializeField] private int def = 2;
+
     private IEnumerator _attack = null;
 
     private PState state = PState.Nomal;
 
-    Player player = new Player();
+    Player player;
 
     private void Start()
     {
+        player = new Player(maxHP, atk, def);
+
         _attack = Attack();
         StartCoroutine(_attack);
 
