@@ -1,111 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
-enum PState
+class Player
 {
-    None,
-    Nomal,
-    Attack,
-    Max,
-}
+    public int HealthPoint { get; private set; }
+    public int StrikingPower { get; private set; }
+    public int DefensivePower { get; private set; }
 
-public class Player : MonoBehaviour
-{
-    [Header("UI")]
-    [SerializeField] private Slider _hpBar;
-    [SerializeField] private Slider _cooltimeBar;
-    [SerializeField] private TextMeshProUGUI _damageText;
+    public int Speed { get; private set; }
 
-    [Header("Data")]
-    [SerializeField] private int _hp = 10;
-    [SerializeField] private int _strength = 2;
-    [SerializeField] private float _speed;
-
-    private IEnumerator _attack = null;
-
-    private PState state = PState.Nomal;
-
-    private void Start()
+    public Player()
     {
-        _speed = GameManager.Instance.SpeedDistribution();
-
-        _attack = Attack();
-        StartCoroutine(_attack);
-
-        GameManager.Instance.EndGameEvent.AddListener(StopAction);
-        GameManager.Instance.Hitting.AddListener(Hit);
+        HealthPoint = 100;
+        StrikingPower = 10;
+        DefensivePower = 5;
+        Speed = Random.Range(0, 5);
     }
 
-    private void OnDisable()
+    public Player(int hp, int atk, int def)
     {
-        GameManager.Instance.EndGameEvent.RemoveListener(StopAction);
-        GameManager.Instance.Hitting.RemoveListener(Hit);
+        HealthPoint = hp;
+        StrikingPower = atk;
+        DefensivePower = def;
+        Speed = Random.Range(0, 5);
     }
 
-    /// <summary>
-    /// 공격
-    /// </summary>
-    IEnumerator Attack()
+    public void Hit(int damage)
     {
-        _cooltimeBar.maxValue = 1f + _speed;
-        float actionTime = 0f;
-        WaitForSeconds attackActionTime = new WaitForSeconds(1f);
-
-        while (true)
-        {
-            yield return new WaitForSeconds(1f);
-            actionTime += 1f;
-            _cooltimeBar.value = actionTime;
-
-            if (actionTime >= _cooltimeBar.maxValue)
-            {
-                state = PState.Attack;
-                Debug.Log($"{gameObject} : 죽어랏!!!!~!~!");
-                GameManager.Instance.HitOtherPlayer(_strength);
-
-
-                yield return attackActionTime;
-
-                state = PState.Nomal;
-                actionTime = 0f;
-                _cooltimeBar.value = 0f;
-
-            }
-        }
-    }
-
-    /// <summary>
-    /// 맞음
-    /// </summary>
-    /// <param name="damage"></param>
-    private void Hit(int damage)
-    {
-        if (state == PState.Attack)
-        {
-            return;
-        }
-
-        _hp -= damage;
-
-        if (_hp <= 0)
-        {
-            _hp = 0;
-            GameManager.Instance.BattleEnd();
-            Debug.Log($"{gameObject} : 컥컥...");
-        }
-
-        _damageText.text = "-" + damage;
-        _hpBar.value = _hp;
-    }
-
-    /// <summary>
-    /// 코루틴 중단
-    /// </summary>
-    private void StopAction()
-    {
-        StopCoroutine(_attack);
+        HealthPoint -= (damage - DefensivePower);
     }
 }
