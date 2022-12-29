@@ -39,6 +39,8 @@ public class PlayerSkill : MonoBehaviour
     private void A(Player player)
     {
         // 최대 체력의 20%를 회복(턴 3)
+        int health = Mathf.RoundToInt(player.HealthPoint * 20 / 100);
+        player.Heal(health);
     }
 
     private void B(Player player)
