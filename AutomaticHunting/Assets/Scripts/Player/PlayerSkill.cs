@@ -46,15 +46,26 @@ public class PlayerSkill : MonoBehaviour
     private void B(Player player)
     {
         // 기본 데미지 50 + 자신의 방어력 10%만큼 피해를 입힘(턴 3)
+        int damage = 50 + Mathf.RoundToInt(player.DefensivePower * 10 / 100);
+        // 이벤트로 전달
+        GameManager.Instance.HitOtherPlayer(damage);
     }
 
     private void C(Player player)
     {
         // 공격력의 130%의 피해를 입힘(턴 2)
+        int damage = player.StrikingPower + Mathf.RoundToInt(player.StrikingPower * 30 / 100);
+        // 이벤트로 전달
+        GameManager.Instance.HitOtherPlayer(damage);
     }
 
     private void D(Player player)
     {
         // 공격력의 90%의 피해를 두 번 입힘(턴 4)
+        int damage = Mathf.RoundToInt(player.StrikingPower * 90 / 100);
+        for (int i = 0; i < 2; ++i)
+        {
+            GameManager.Instance.HitOtherPlayer(damage);
+        }
     }
 }
