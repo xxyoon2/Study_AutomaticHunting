@@ -20,27 +20,35 @@ public class PlayerA : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _damageText;
 
     [Header("시작할 때 적용되는 플레이어 데이터")]
-    [SerializeField] private int maxHP = 100;
-    [SerializeField] private int atk = 10;
-    [SerializeField] private int def = 2;
+    [SerializeField] private int _maxHP = 100;
+    [SerializeField] private int _atk = 10;
+    [SerializeField] private int _def = 2;
 
-    [SerializeField] private SkillList skill1 = SkillList.A;
-    [SerializeField] private SkillList skill2 = SkillList.B;
+    [SerializeField] private SkillList _skill1 = SkillList.A;
+    [SerializeField] private SkillList _skill2 = SkillList.B;
 
-    Player player;
+    private int _skill1Colltime;
+    private int _skill2Colltime;
 
-    private IEnumerator _attack = null;
+    Player _player;
+    PlayerSkill _skill;
 
-    private PState state = PState.Nomal;
+    private IEnumerator _updateBehaviorGauge = null;
+
+    private PState _state = PState.Nomal;
 
     
 
     private void Start()
     {
-        player = new Player(maxHP, atk, def);
+        _player = new Player(_maxHP, _atk, _def);
 
-        _attack = Attack();
-        StartCoroutine(_attack);
+        _skill = GetComponent<PlayerSkill>();
+        _skill1Colltime = _skill.GetCoolTime(_skill1);
+        _skill2Colltime = _skill.GetCoolTime(_skill2);
+
+        _updateBehaviorGauge = UpdateBehaviorGauge();
+        StartCoroutine(_updateBehaviorGauge);
 
         GameManager.Instance.EndGameEvent.AddListener(StopAction);
         GameManager.Instance.Hitting.AddListener(Hit);
@@ -53,11 +61,11 @@ public class PlayerA : MonoBehaviour
     }
 
     /// <summary>
-    /// 공격
+    /// 행동 게이지 업데이트
     /// </summary>
-    IEnumerator Attack()
+    IEnumerator UpdateBehaviorGauge()
     {
-        _cooltimeBar.maxValue = 1f + player.Speed;
+        _cooltimeBar.maxValue = 1f + _player.Speed;
         float actionTime = 0f;
         WaitForSeconds attackActionTime = new WaitForSeconds(1f);
 
@@ -69,18 +77,38 @@ public class PlayerA : MonoBehaviour
 
             if (actionTime >= _cooltimeBar.maxValue)
             {
-                state = PState.Attack;
-                Debug.Log($"{gameObject} : 죽어랏!!!!~!~!");
-                GameManager.Instance.HitOtherPlayer(player.StrikingPower);
+                Attack();
 
-
-                yield return attackActionTime;
-
-                state = PState.Nomal;
+                _state = PState.Nomal;
                 actionTime = 0f;
                 _cooltimeBar.value = 0f;
 
             }
+        }
+    }
+
+    private void Attack()
+    {
+        _state = PState.Attack;
+        _skill1Colltime = _skill2Colltime -= 1;
+
+        if (_skill2Colltime <= 0)
+        {
+            _skill.UseSkill(_player, _skill2);
+            _skill2Colltime = _skill.GetCoolTime(_skill2);
+
+            return;
+        }
+        else if (_skill1Colltime <= 0)
+        {
+            _skill.UseSkill(_player, _skill1);
+            _skill1Colltime = _skill.GetCoolTime(_skill1);
+
+            return;
+        }
+        else
+        {
+            GameManager.Instance.HitOtherPlayer(_player.StrikingPower);
         }
     }
 
@@ -90,21 +118,21 @@ public class PlayerA : MonoBehaviour
     /// <param name="damage"></param>
     private void Hit(int damage)
     {
-        if (state == PState.Attack)
+        if (_state == PState.Attack)
         {
             return;
         }
 
-        player.Hit(damage);
+        _player.Hit(damage);
 
-        if (player.HealthPoint <= 0)
+        if (_player.currentHP <= 0)
         {
             GameManager.Instance.BattleEnd();
             Debug.Log($"{gameObject} : 컥컥...");
         }
 
         _damageText.text = "-" + damage;
-        _hpBar.value = player.HealthPoint;
+        _hpBar.value = _player.HealthPoint;
     }
 
     /// <summary>
@@ -112,6 +140,6 @@ public class PlayerA : MonoBehaviour
     /// </summary>
     private void StopAction()
     {
-        StopCoroutine(_attack);
+        StopCoroutine(_updateBehaviorGauge);
     }
 }
