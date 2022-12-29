@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-class Player
+public class Player
 {
     public int HealthPoint { get; private set; }
     public int StrikingPower { get; private set; }
@@ -29,5 +29,10 @@ class Player
     public void Hit(int damage)
     {
         HealthPoint -= (damage - DefensivePower);
+    }
+
+    public void Heal(int health)
+    {
+        HealthPoint += health;
     }
 }

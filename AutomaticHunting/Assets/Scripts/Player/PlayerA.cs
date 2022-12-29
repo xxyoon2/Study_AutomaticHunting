@@ -24,11 +24,13 @@ public class PlayerA : MonoBehaviour
     [SerializeField] private int atk = 10;
     [SerializeField] private int def = 2;
 
+    Player player;
+
     private IEnumerator _attack = null;
 
     private PState state = PState.Nomal;
 
-    Player player;
+    
 
     private void Start()
     {
