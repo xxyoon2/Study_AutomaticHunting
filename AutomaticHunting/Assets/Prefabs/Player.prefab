@@ -808,8 +808,8 @@ GameObject:
   - component: {fileID: 8965873065479227057}
   - component: {fileID: 8965873065479227062}
   - component: {fileID: 8965873065479227063}
-  - component: {fileID: 8965873065479227059}
-  - component: {fileID: 434915880232476015}
+  - component: {fileID: 6655996464440753555}
+  - component: {fileID: 7961343889909390146}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -896,7 +896,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8965873065479227059
+--- !u!114 &6655996464440753555
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -916,7 +916,7 @@ MonoBehaviour:
   _def: 2
   _skill1: 1
   _skill2: 2
---- !u!114 &434915880232476015
+--- !u!114 &7961343889909390146
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

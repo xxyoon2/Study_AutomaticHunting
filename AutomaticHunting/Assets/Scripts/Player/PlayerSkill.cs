@@ -16,7 +16,7 @@ public class PlayerSkill : MonoBehaviour
 {
     private int[] _skillCoolTime = { 0, 3, 3, 2, 4 , 0};
 
-    public void UseSkill(Player player, SkillList skill)
+    public void UseSkill(PlayerStat player, SkillList skill)
     {
         switch(skill)
         {
@@ -43,28 +43,28 @@ public class PlayerSkill : MonoBehaviour
         return _skillCoolTime[(int)skill];
     }
 
-    private void A(Player player)
+    private void A(PlayerStat player)
     {
         // 최대 체력의 20%를 회복(턴 3)
         int health = Mathf.RoundToInt(player.HealthPoint * 20 / 100);
         player.Heal(health);
     }
 
-    private void B(Player player)
+    private void B(PlayerStat player)
     {
         // 기본 데미지 50 + 자신의 방어력 10%만큼 피해를 입힘(턴 3)
         int damage = 50 + Mathf.RoundToInt(player.DefensivePower * 10 / 100);
         GameManager.Instance.HitOtherPlayer(damage);
     }
 
-    private void C(Player player)
+    private void C(PlayerStat player)
     {
         // 공격력의 130%의 피해를 입힘(턴 2)
         int damage = player.StrikingPower + Mathf.RoundToInt(player.StrikingPower * 30 / 100);
         GameManager.Instance.HitOtherPlayer(damage);
     }
 
-    private void D(Player player)
+    private void D(PlayerStat player)
     {
         // 공격력의 90%의 피해를 두 번 입힘(턴 4)
         int damage = Mathf.RoundToInt(player.StrikingPower * 90 / 100);
